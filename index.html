@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<title>calculator</title>
+<title>iPhone風 電卓</title>
+
 <style>
   body {
     background: #000;
@@ -42,11 +43,28 @@
     border-radius: 50%;
     height: 64px;
     cursor: pointer;
+    transition: background 0.15s, color 0.15s;
   }
 
-  .gray { background: #a5a5a5; color: black; }
-  .dark { background: #333; color: white; }
-  .orange { background: #ff9f0a; color: white; }
+  .gray {
+    background: #a5a5a5;
+    color: black;
+  }
+
+  .dark {
+    background: #333;
+    color: white;
+  }
+
+  .orange {
+    background: #ff9f0a;
+    color: white;
+  }
+
+  .operator.active {
+    background: white !important;
+    color: #ff9f0a !important;
+  }
 
   .zero {
     grid-column: span 2;
@@ -54,15 +72,10 @@
     text-align: left;
     padding-left: 24px;
   }
-
-  .active {
-    background: white !important;
-    color: #ff9f0a !important;
-  }
 </style>
 </head>
-<body>
 
+<body>
 <div class="calculator">
   <div class="display" id="display">0</div>
 
@@ -70,22 +83,22 @@
     <button class="gray" onclick="clearAll()">AC</button>
     <button class="gray" onclick="toggleSign()">±</button>
     <button class="gray" onclick="percent()">%</button>
-    <button class="orange" onclick="setOperator('÷')">÷</button>
+    <button class="orange operator" data-op="÷" onclick="setOperator('÷')">÷</button>
 
     <button class="dark" onclick="inputNumber(7)">7</button>
     <button class="dark" onclick="inputNumber(8)">8</button>
     <button class="dark" onclick="inputNumber(9)">9</button>
-    <button class="orange" onclick="setOperator('×')">×</button>
+    <button class="orange operator" data-op="×" onclick="setOperator('×')">×</button>
 
     <button class="dark" onclick="inputNumber(4)">4</button>
     <button class="dark" onclick="inputNumber(5)">5</button>
     <button class="dark" onclick="inputNumber(6)">6</button>
-    <button class="orange" onclick="setOperator('−')">−</button>
+    <button class="orange operator" data-op="−" onclick="setOperator('−')">−</button>
 
     <button class="dark" onclick="inputNumber(1)">1</button>
     <button class="dark" onclick="inputNumber(2)">2</button>
     <button class="dark" onclick="inputNumber(3)">3</button>
-    <button class="orange" onclick="setOperator('+')">+</button>
+    <button class="orange operator" data-op="+" onclick="setOperator('+')">+</button>
 
     <button class="dark zero" onclick="inputNumber(0)">0</button>
     <button class="dark" onclick="inputDot()">.</button>
@@ -106,6 +119,7 @@
   }
 
   function inputNumber(num) {
+    clearHighlight();
     if (resetNext) {
       current = String(num);
       resetNext = false;
@@ -116,6 +130,7 @@
   }
 
   function inputDot() {
+    clearHighlight();
     if (!current.includes(".")) {
       current += ".";
       updateDisplay();
@@ -127,6 +142,7 @@
     previous = null;
     operator = null;
     resetNext = false;
+    clearHighlight();
     updateDisplay();
   }
 
@@ -145,6 +161,7 @@
     previous = parseFloat(current);
     operator = op;
     resetNext = true;
+    highlightOperator(op);
   }
 
   function calculate() {
@@ -172,9 +189,21 @@
     operator = null;
     previous = null;
     resetNext = true;
+    clearHighlight();
     updateDisplay();
   }
-</script>
 
+  function highlightOperator(op) {
+    document.querySelectorAll(".operator").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.op === op);
+    });
+  }
+
+  function clearHighlight() {
+    document.querySelectorAll(".operator").forEach(btn => {
+      btn.classList.remove("active");
+    });
+  }
+</script>
 </body>
 </html>
