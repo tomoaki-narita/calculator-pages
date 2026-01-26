@@ -130,19 +130,17 @@ const display = document.getElementById("display");
 function updateDisplay() {
     display.textContent = current;
 
-    const length = current.length;
+    // 初期サイズ
+    let fontSize = 48;
+    display.style.fontSize = fontSize + "px";
 
-    if (length <= 6) {
-        display.style.fontSize = "48px";
-    } else if (length <= 8) {
-        display.style.fontSize = "40px";
-    } else if (length <= 10) {
-        display.style.fontSize = "32px";
-    } else {
-        display.style.fontSize = "26px";
+    // 表示がはみ出す限り縮小
+    while (display.scrollWidth > display.clientWidth && fontSize > 24) {
+        fontSize -= 2;
+        display.style.fontSize = fontSize + "px";
     }
 }
-
+    
 function inputNum(num) {
     current = current === "0" ? num : current + num;
     updateDisplay();
