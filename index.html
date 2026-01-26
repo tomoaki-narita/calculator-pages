@@ -129,6 +129,18 @@ const display = document.getElementById("display");
 
 function updateDisplay() {
     display.textContent = current;
+
+    const length = current.length;
+
+    if (length <= 6) {
+        display.style.fontSize = "48px";
+    } else if (length <= 8) {
+        display.style.fontSize = "40px";
+    } else if (length <= 10) {
+        display.style.fontSize = "32px";
+    } else {
+        display.style.fontSize = "26px";
+    }
 }
 
 function inputNum(num) {
