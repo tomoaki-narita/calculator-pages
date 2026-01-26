@@ -1,209 +1,189 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<title>iPhone風 電卓</title>
-
+<meta charset="UTF-8">
+<title>Calculator</title>
 <style>
-  body {
-    background: transparent;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
 
-  .calculator {
-    width: 320px;
-    background: transparent;
-  }
+    .calculator {
+        width: 260px;
+        background: transparent;
+    }
 
-  .display {
-    color: white;
-    font-size: 64px;
-    text-align: right;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
+    .display {
+        color: white;
+        font-size: 48px;
+        text-align: right;
+        padding: 20px 16px 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
 
-  .buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    padding: 12px;
-    box-sizing: border-box;
-  }
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
 
-  button {
-    font-size: 28px;
-    border: none;
-    border-radius: 50%;
-    height: 64px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
+    button {
+        height: 56px;
+        border-radius: 50%;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+    }
 
-  .gray {
-    background: #a5a5a5;
-    color: black;
-  }
+    .num {
+        background: #333;
+        color: white;
+    }
 
-  .dark {
-    background: #333;
-    color: white;
-  }
+    .zero {
+        grid-column: span 2;
+        border-radius: 28px;
+        text-align: left;
+        padding-left: 22px;
+    }
 
-  .orange {
-    background: #ff9f0a;
-    color: white;
-  }
+    .func {
+        background: #a5a5a5;
+        color: black;
+    }
 
-  .operator.active {
-    background: white !important;
-    color: #ff9f0a !important;
-  }
+    .op {
+        background: #ff9f0a;
+        color: white;
+    }
 
-  .zero {
-    grid-column: span 2;
-    border-radius: 32px;
-    text-align: left;
-    padding-left: 24px;
-  }
+    .op.active {
+        background: white;
+        color: #ff9f0a;
+    }
 </style>
 </head>
-
 <body>
+
 <div class="calculator">
-  <div class="display" id="display">0</div>
+    <div class="display" id="display">0</div>
 
-  <div class="buttons">
-    <button class="gray" onclick="clearAll()">AC</button>
-    <button class="gray" onclick="toggleSign()">±</button>
-    <button class="gray" onclick="percent()">%</button>
-    <button class="orange operator" data-op="÷" onclick="setOperator('÷')">÷</button>
+    <div class="buttons">
+        <button class="func" onclick="clearAll()">AC</button>
+        <button class="func" onclick="backspace()">⌫</button>
+        <button class="func" onclick="percent()">%</button>
+        <button class="op" onclick="setOperator('÷', this)">÷</button>
 
-    <button class="dark" onclick="inputNumber(7)">7</button>
-    <button class="dark" onclick="inputNumber(8)">8</button>
-    <button class="dark" onclick="inputNumber(9)">9</button>
-    <button class="orange operator" data-op="×" onclick="setOperator('×')">×</button>
+        <button class="num" onclick="inputNum('7')">7</button>
+        <button class="num" onclick="inputNum('8')">8</button>
+        <button class="num" onclick="inputNum('9')">9</button>
+        <button class="op" onclick="setOperator('×', this)">×</button>
 
-    <button class="dark" onclick="inputNumber(4)">4</button>
-    <button class="dark" onclick="inputNumber(5)">5</button>
-    <button class="dark" onclick="inputNumber(6)">6</button>
-    <button class="orange operator" data-op="−" onclick="setOperator('−')">−</button>
+        <button class="num" onclick="inputNum('4')">4</button>
+        <button class="num" onclick="inputNum('5')">5</button>
+        <button class="num" onclick="inputNum('6')">6</button>
+        <button class="op" onclick="setOperator('-', this)">−</button>
 
-    <button class="dark" onclick="inputNumber(1)">1</button>
-    <button class="dark" onclick="inputNumber(2)">2</button>
-    <button class="dark" onclick="inputNumber(3)">3</button>
-    <button class="orange operator" data-op="+" onclick="setOperator('+')">+</button>
+        <button class="num" onclick="inputNum('1')">1</button>
+        <button class="num" onclick="inputNum('2')">2</button>
+        <button class="num" onclick="inputNum('3')">3</button>
+        <button class="op" onclick="setOperator('+', this)">＋</button>
 
-    <button class="dark zero" onclick="inputNumber(0)">0</button>
-    <button class="dark" onclick="inputDot()">.</button>
-    <button class="orange" onclick="calculate()">=</button>
-  </div>
+        <button class="num zero" onclick="inputNum('0')">0</button>
+        <button class="num" onclick="inputDot()">.</button>
+        <button class="op" onclick="calculate()">＝</button>
+    </div>
 </div>
 
 <script>
-  let current = "0";
-  let previous = null;
-  let operator = null;
-  let resetNext = false;
+let current = "0";
+let previous = null;
+let operator = null;
+let operatorButton = null;
 
-  const display = document.getElementById("display");
+const display = document.getElementById("display");
 
-  function updateDisplay() {
+function updateDisplay() {
     display.textContent = current;
-  }
+}
 
-  function inputNumber(num) {
-    clearHighlight();
-    if (resetNext) {
-      current = String(num);
-      resetNext = false;
+function inputNum(num) {
+    if (current === "0") {
+        current = num;
     } else {
-      current = current === "0" ? String(num) : current + num;
+        current += num;
     }
     updateDisplay();
-  }
+}
 
-  function inputDot() {
-    clearHighlight();
+function inputDot() {
     if (!current.includes(".")) {
-      current += ".";
-      updateDisplay();
+        current += ".";
+        updateDisplay();
     }
-  }
+}
 
-  function clearAll() {
+function clearAll() {
     current = "0";
     previous = null;
     operator = null;
-    resetNext = false;
-    clearHighlight();
+    clearActive();
     updateDisplay();
-  }
+}
 
-  function toggleSign() {
-    current = String(parseFloat(current) * -1);
+function backspace() {
+    if (current.length > 1) {
+        current = current.slice(0, -1);
+    } else {
+        current = "0";
+    }
     updateDisplay();
-  }
+}
 
-  function percent() {
-    current = String(parseFloat(current) / 100);
+function percent() {
+    current = (parseFloat(current) / 100).toString();
     updateDisplay();
-  }
+}
 
-  function setOperator(op) {
-    if (operator && !resetNext) calculate();
-    previous = parseFloat(current);
+function setOperator(op, btn) {
+    previous = current;
+    current = "0";
     operator = op;
-    resetNext = true;
-    highlightOperator(op);
-  }
+    clearActive();
+    btn.classList.add("active");
+    operatorButton = btn;
+}
 
-  function calculate() {
+function clearActive() {
+    document.querySelectorAll(".op").forEach(b => b.classList.remove("active"));
+}
+
+function calculate() {
     if (operator === null || previous === null) return;
 
-    const currentNum = parseFloat(current);
+    const a = parseFloat(previous);
+    const b = parseFloat(current);
     let result = 0;
 
     switch (operator) {
-      case "+":
-        result = previous + currentNum;
-        break;
-      case "−":
-        result = previous - currentNum;
-        break;
-      case "×":
-        result = previous * currentNum;
-        break;
-      case "÷":
-        result = currentNum === 0 ? 0 : previous / currentNum;
-        break;
+        case "+": result = a + b; break;
+        case "-": result = a - b; break;
+        case "×": result = a * b; break;
+        case "÷": result = b === 0 ? 0 : a / b; break;
     }
 
-    current = String(result);
-    operator = null;
+    current = result.toString();
     previous = null;
-    resetNext = true;
-    clearHighlight();
+    operator = null;
+    clearActive();
     updateDisplay();
-  }
-
-  function highlightOperator(op) {
-    document.querySelectorAll(".operator").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.op === op);
-    });
-  }
-
-  function clearHighlight() {
-    document.querySelectorAll(".operator").forEach(btn => {
-      btn.classList.remove("active");
-    });
-  }
+}
 </script>
+
 </body>
 </html>
